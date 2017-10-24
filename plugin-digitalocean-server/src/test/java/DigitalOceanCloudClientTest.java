@@ -27,6 +27,8 @@ import jetbrains.buildServer.clouds.CloudImage;
 import jetbrains.buildServer.clouds.CloudInstanceUserData;
 import jetbrains.buildServer.clouds.InstanceStatus;
 import jetbrains.buildServer.util.WaitFor;
+
+import org.apache.log4j.BasicConfigurator;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -42,20 +44,23 @@ import java.util.concurrent.Executors;
  */
 public class DigitalOceanCloudClientTest {
 
-  private static final String apiKey = "3c808863fb03c4bef1645d0a0ed515f84b44cbb37b38bde936ae8af2879eb9a5";
+  private static final String apiKey = "xxx";
 
-  private static final String imageName = "openinet";
+  private static final String imageSlug = "ubuntu-16-04-x64";
 
   private static final String instancesLimit = "3";
 
-  private static final String sshKeyName = "Macbook graf@abolmasov.pro";
+  private static final String sshKeyName = "pollen-osx";
 
-  private static final String region = "ams2";
+  private static final String region = "nyc3";
 
   private static final String size = "512mb";
 
+  private static final String volumeSize = "40";
+
   @Test(enabled = false)
   public void testInstanceLifeCycle() throws InterruptedException {
+	  BasicConfigurator.configure();
 
     Thread.sleep(10000);
 
