@@ -29,7 +29,7 @@ public class PluginConfiguration {
 
   private final String apiKey;
 
-  private final String imageName;
+  private final String imageSlug;
 
   private final String sshKeyName;
 
@@ -42,7 +42,7 @@ public class PluginConfiguration {
   public PluginConfiguration(String apiKey, String imageName, String sshKeyName,
                              String regionId, String sizeId, int instancesLimit) {
     this.apiKey = apiKey;
-    this.imageName = imageName;
+    this.imageSlug = imageSlug;
     this.sshKeyName = sshKeyName;
     this.regionId = regionId;
     this.sizeId = sizeId;
@@ -53,7 +53,7 @@ public class PluginConfiguration {
   public static PluginConfiguration parseParams(@NotNull CloudClientParameters params) {
     final String apiKey = getString(params, ProfileConfigurationConstants.API_KEY_PROFILE_SETTING);
 
-    final String imageName = getString(params, ProfileConfigurationConstants.IMAGE_PROFILE_SETTING);
+    final String imageSlug = getString(params, ProfileConfigurationConstants.IMAGE_PROFILE_SETTING);
 
     final String sshKeyName = getString(params, ProfileConfigurationConstants.SSH_KEY_PROFILE_SETTING);
 
@@ -63,7 +63,7 @@ public class PluginConfiguration {
 
     final int instancesLimit = getInt(params, ProfileConfigurationConstants.INSTANCES_LIMIT_PROFILE_SETTING);
 
-    return new PluginConfiguration(apiKey, imageName, sshKeyName, regionId, sizeId, instancesLimit);
+    return new PluginConfiguration(apiKey, imageSlug, sshKeyName, regionId, sizeId, instancesLimit);
   }
 
   private static String getString(CloudClientParameters params, String paramName) {
@@ -91,8 +91,8 @@ public class PluginConfiguration {
     return apiKey;
   }
 
-  public String getImageName() {
-    return imageName;
+  public String getImageSlug() {
+    return imageSlug;
   }
 
   public String getSshKeyName() {

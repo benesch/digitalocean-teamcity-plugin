@@ -175,12 +175,12 @@ public class DigitalOceanCloudImage implements CloudImage {
 
   @NotNull
   public Image getDigitalOceanImage() {
-    final Image image = myApi.getImage(myDigitalOceanImage.getName());
+    final Image image = myApi.getImage(myDigitalOceanImage.getSlug());
     if (image != null) {
       myDigitalOceanImage = image;
       myLastError = null;
     } else {
-      myLastError = new CloudErrorInfo("Cannot find image with name " + myDigitalOceanImage.getName());
+      myLastError = new CloudErrorInfo("Cannot find image with slug " + myDigitalOceanImage.getSlug());
     }
 
     return myDigitalOceanImage;

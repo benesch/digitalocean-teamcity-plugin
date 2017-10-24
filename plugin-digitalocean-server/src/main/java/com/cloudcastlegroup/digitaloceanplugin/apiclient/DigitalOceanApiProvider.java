@@ -117,19 +117,14 @@ public class DigitalOceanApiProvider {
     }
   }
 
-  public Image getImage(String name) {
-    if (name.isEmpty()) {
-      throw new IllegalArgumentException("Name cannot be null or empty");
+  public Image getImage(@NotNull final String slug) {
+    try {
+      return apiClient.getImageInfo(slug);
+    } catch (DigitalOceanException e) {
+      throw new DigitalOceanApiException(e);
+    } catch (RequestUnsuccessfulException e) {
+      throw new DigitalOceanApiException(e);
     }
-
-    List<Image> images = getImages();
-    for (Image image : images) {
-      if (name.equals(image.getName())) {
-        return image;
-      }
-    }
-
-    return null;
   }
 
   public List<Image> getAllImages() {

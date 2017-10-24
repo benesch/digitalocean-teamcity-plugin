@@ -69,7 +69,7 @@ public class DigitalOceanCloudClientTest {
 
     final CloudClientParameters parameters = new CloudClientParameters();
     parameters.setParameter(ProfileConfigurationConstants.API_KEY_PROFILE_SETTING, apiKey);
-    parameters.setParameter(ProfileConfigurationConstants.IMAGE_PROFILE_SETTING, imageName);
+    parameters.setParameter(ProfileConfigurationConstants.IMAGE_PROFILE_SETTING, imageSlug);
     parameters.setParameter(ProfileConfigurationConstants.INSTANCES_LIMIT_PROFILE_SETTING, instancesLimit);
     parameters.setParameter(ProfileConfigurationConstants.SSH_KEY_PROFILE_SETTING, sshKeyName);
     parameters.setParameter(ProfileConfigurationConstants.REGION_PROFILE_SETTING, region);
@@ -133,7 +133,7 @@ public class DigitalOceanCloudClientTest {
 
     final CloudClientParameters parameters = new CloudClientParameters();
     parameters.setParameter(ProfileConfigurationConstants.API_KEY_PROFILE_SETTING, apiKey);
-    parameters.setParameter(ProfileConfigurationConstants.IMAGE_PROFILE_SETTING, imageName);
+    parameters.setParameter(ProfileConfigurationConstants.IMAGE_PROFILE_SETTING, imageSlug);
     parameters.setParameter(ProfileConfigurationConstants.INSTANCES_LIMIT_PROFILE_SETTING, instancesLimit);
     parameters.setParameter(ProfileConfigurationConstants.SSH_KEY_PROFILE_SETTING, sshKeyName);
     parameters.setParameter(ProfileConfigurationConstants.REGION_PROFILE_SETTING, region);
