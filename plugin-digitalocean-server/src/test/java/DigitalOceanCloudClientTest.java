@@ -74,6 +74,7 @@ public class DigitalOceanCloudClientTest {
     parameters.setParameter(ProfileConfigurationConstants.SSH_KEY_PROFILE_SETTING, sshKeyName);
     parameters.setParameter(ProfileConfigurationConstants.REGION_PROFILE_SETTING, region);
     parameters.setParameter(ProfileConfigurationConstants.SIZE_PROFILE_SETTING, size);
+    parameters.setParameter(ProfileConfigurationConstants.VOLUME_SIZE_PROFILE_SETTING, volumeSize);
 
     final DigitalOceanCloudClient cloudClient = new DigitalOceanCloudClient(parameters);
     Assert.assertNull(cloudClient.getErrorInfo());
@@ -138,6 +139,7 @@ public class DigitalOceanCloudClientTest {
     parameters.setParameter(ProfileConfigurationConstants.SSH_KEY_PROFILE_SETTING, sshKeyName);
     parameters.setParameter(ProfileConfigurationConstants.REGION_PROFILE_SETTING, region);
     parameters.setParameter(ProfileConfigurationConstants.SIZE_PROFILE_SETTING, size);
+    parameters.setParameter(ProfileConfigurationConstants.VOLUME_SIZE_PROFILE_SETTING, volumeSize);
 
     final DigitalOceanCloudClient cloudClient = new DigitalOceanCloudClient(parameters);
     final Collection<? extends CloudImage> cloudImages = cloudClient.getImages();

@@ -61,13 +61,15 @@ public class DigitalOceanApiProvider {
     }
   }
 
-  public Droplet createDroplet(@NotNull final String name, final int imageId, final String size, final String regionId, final int sshKeyId) {
+  public Droplet createDroplet(@NotNull final String name, final int imageId, final String size, final String regionId,
+      final int sshKeyId, List<String> volume_ids) {
     Droplet newDroplet = new Droplet();
     newDroplet.setName(name);
     newDroplet.setImage(new Image(imageId));
     newDroplet.setSize(size);
     newDroplet.setRegion(new Region(regionId));
     newDroplet.setKeys(Collections.singletonList(new Key(sshKeyId)));
+    newDroplet.setVolumeIds(volume_ids);
     try {
       return apiClient.createDroplet(newDroplet);
     } catch (DigitalOceanException e) {
@@ -100,6 +102,60 @@ public class DigitalOceanApiProvider {
   public Action shutdownDroplet(int id) {
     try {
       return apiClient.shutdownDroplet(id);
+    } catch (DigitalOceanException e) {
+      throw new DigitalOceanApiException(e);
+    } catch (RequestUnsuccessfulException e) {
+      throw new DigitalOceanApiException(e);
+    }
+  }
+
+  public List<Volume> getVolumes(@NotNull final String region) {
+    try {
+      return this.apiClient.getAvailableVolumes(region).getVolumes();
+    } catch (DigitalOceanException e) {
+      throw new DigitalOceanApiException(e);
+    } catch (RequestUnsuccessfulException e) {
+      throw new DigitalOceanApiException(e);
+    }
+  }
+
+  public Volume getVolume(@NotNull final String id) {
+    try {
+      return apiClient.getVolumeInfo(id);
+    } catch (DigitalOceanException e) {
+      throw new DigitalOceanApiException(e);
+    } catch (RequestUnsuccessfulException e) {
+      throw new DigitalOceanApiException(e);
+    }
+  }
+
+  public Volume createVolume(@NotNull final String name, final int sizeGigabytes, @NotNull final String regionId) {
+    Volume newVolume = new Volume();
+    newVolume.setName(name);
+    newVolume.setSize((double) sizeGigabytes);
+    newVolume.setRegion(new Region(regionId));
+    try {
+      return apiClient.createVolume(newVolume);
+    } catch (DigitalOceanException e) {
+      throw new DigitalOceanApiException(e);
+    } catch (RequestUnsuccessfulException e) {
+      throw new DigitalOceanApiException(e);
+    }
+  }
+
+  public Delete deleteVolume(@NotNull final String volumeId) {
+    try {
+      return apiClient.deleteVolume(volumeId);
+    } catch (DigitalOceanException e) {
+      throw new DigitalOceanApiException(e);
+    } catch (RequestUnsuccessfulException e) {
+      throw new DigitalOceanApiException(e);
+    }
+  }
+
+  public Action attachVolume(int dropletId, @NotNull final String volumeId, @NotNull final String regionSlug) {
+    try {
+      return apiClient.attachVolume(dropletId, volumeId, regionSlug);
     } catch (DigitalOceanException e) {
       throw new DigitalOceanApiException(e);
     } catch (RequestUnsuccessfulException e) {

@@ -50,6 +50,7 @@ public class DigitalOceanCloudClient extends BuildServerAdapter implements Cloud
   @NotNull
   private final DigitalOceanApiProvider myApi;
 
+  private int myDigitalOceanVolumeSize;
   private int myDigitalOceanSshKeyId;
   private String myDigitalOceanSizeId;
   private String myDigitalOceanRegionId;
@@ -96,6 +97,17 @@ public class DigitalOceanCloudClient extends BuildServerAdapter implements Cloud
     } catch (Exception ex) {
       myErrorInfo = new CloudErrorInfo("Cannot connect to DigitalOcean",
               "Check your internet connection and api key", ex);
+    }
+
+    try {
+      final int volumeSize = Integer.parseInt(settings.getVolumeSize());
+      if (volumeSize > 16 * 1024) {
+        myErrorInfo = new CloudErrorInfo("Volume size is larger than 16TB, got " + settings.getVolumeSize());
+      } else {
+        myDigitalOceanVolumeSize = volumeSize;
+      }
+    } catch (NumberFormatException e) {
+      myErrorInfo = new CloudErrorInfo("Volume size was invalid, got " + settings.getVolumeSize());
     }
 
     myDigitalOceanSizeId = settings.getSizeId();
@@ -163,8 +175,8 @@ public class DigitalOceanCloudClient extends BuildServerAdapter implements Cloud
   public CloudInstance startNewInstance(@NotNull final CloudImage image,
                                         @NotNull final CloudInstanceUserData data) throws QuotaException {
     final DigitalOceanCloudImage cloudImage = (DigitalOceanCloudImage) image;
-    return cloudImage.startNewInstance(myApi, data, myExecutor, myDigitalOceanSshKeyId,
-            myDigitalOceanRegionId, myDigitalOceanSizeId);
+    return cloudImage.startNewInstance(myApi, data, myExecutor, myDigitalOceanVolumeSize, myDigitalOceanSshKeyId,
+        myDigitalOceanRegionId, myDigitalOceanSizeId);
   }
 
   public void restartInstance(@NotNull final CloudInstance instance) {

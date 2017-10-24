@@ -8,6 +8,8 @@
 <c:set var="regionIdParamName" value="<%=ProfileConfigurationConstants.REGION_PROFILE_SETTING%>"/>
 <c:set var="sizeIdParamName" value="<%=ProfileConfigurationConstants.SIZE_PROFILE_SETTING%>"/>
 <c:set var="instancesLimitParamName" value="<%=ProfileConfigurationConstants.INSTANCES_LIMIT_PROFILE_SETTING%>"/>
+<c:set var="volumeSizeParamName" value="<%=ProfileConfigurationConstants.VOLUME_SIZE_PROFILE_SETTING%>"/>
+
 
 <tr>
   <th><label for="${apiKeyParamName}">API Key*:</label></th>
@@ -74,3 +76,10 @@
     </props:selectProperty>
 </tr>
 
+<tr>
+  <th><label for="${volumeSizeParamName}">Volume Size*:</label></th>
+  <td>
+    <props:textProperty name="${volumeSizeParamName}" className="textProperty longField" />
+    <span class="smallNote">The GiB of a volume to attach to agents. If the size is zero, no volume will be used.</span>
+  </td>
+</tr>
