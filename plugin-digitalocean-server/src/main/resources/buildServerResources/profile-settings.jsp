@@ -73,6 +73,10 @@
       <props:option value="32gb"><c:out value="32 Gb - 12CPU - 320Gb - $320/mo"/></props:option>
       <props:option value="48gb"><c:out value="48 Gb - 16CPU - 480Gb - $480/mo"/></props:option>
       <props:option value="64gb"><c:out value="64 Gb - 20CPU - 640Gb - $640/mo"/></props:option>
+      <props:option value="c-2"><c:out value="High perf. CPU: 3 GB - 2CPU - 20Gb - $40/mo"/></props:option>
+      <props:option value="c-4"><c:out value="High perf. CPU: 6 GB - 4CPU - 20Gb - $80/mo"/></props:option>
+      <props:option value="c-8"><c:out value="High perf. CPU: 12 Gb - 8CPU - 20Gb - $160/mo"/></props:option>
+      <props:option value="c-16"><c:out value="High perf. CPU: 24 Gb - 16CPU - 20Gb - $320/mo"/></props:option>
     </props:selectProperty>
 </tr>
 
