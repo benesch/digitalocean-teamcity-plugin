@@ -137,10 +137,11 @@ public class DigitalOceanCloudImage implements CloudImage {
 
   public synchronized void addExistingDroplet(Droplet droplet, ExecutorService executor) {
     int sshKeyId = 0; // dummy key, since the instance is already created
+    int volumeId = 0; // dummy volume size too
     String regionId = droplet.getRegion().getSlug();
     String sizeId = droplet.getSize();
     final DigitalOceanCloudInstance instance = new DigitalOceanCloudInstance(
-      myApi, this, executor, sshKeyId, regionId, sizeId);
+      myApi, this, executor, volumeId, sshKeyId, regionId, sizeId);
     instance.setExistingDroplet(droplet);
     final DigitalOceanCloudImage self = this;
     instance.addOnDropletReadyListener(new DropletLifecycleListener() {
