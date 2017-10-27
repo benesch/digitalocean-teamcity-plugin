@@ -18,12 +18,14 @@ package com.cloudcastlegroup.digitaloceanplugin;
 
 import com.cloudcastlegroup.digitaloceanplugin.apiclient.DigitalOceanApiProvider;
 import com.cloudcastlegroup.digitaloceanplugin.settings.PluginConfiguration;
+import com.myjeeva.digitalocean.pojo.Droplet;
 import com.myjeeva.digitalocean.pojo.Image;
 import com.myjeeva.digitalocean.pojo.Key;
 import jetbrains.buildServer.clouds.*;
 import jetbrains.buildServer.serverSide.AgentDescription;
 import jetbrains.buildServer.serverSide.BuildServerAdapter;
 import jetbrains.buildServer.util.NamedDaemonThreadFactory;
+import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -31,6 +33,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.List;
 
 import static com.cloudcastlegroup.digitaloceanplugin.BuildAgentConfigurationConstants.IMAGE_ID_PARAM_NAME;
 import static com.cloudcastlegroup.digitaloceanplugin.BuildAgentConfigurationConstants.INSTANCE_ID_PARAM_NAME;
@@ -42,9 +45,12 @@ import static com.cloudcastlegroup.digitaloceanplugin.BuildAgentConfigurationCon
  */
 public class DigitalOceanCloudClient extends BuildServerAdapter implements CloudClientEx {
 
+  private static final Logger LOG = Logger.getLogger(DigitalOceanCloudClient.class);
+
   @NotNull
   private final DigitalOceanApiProvider myApi;
 
+  private int myDigitalOceanVolumeSize;
   private int myDigitalOceanSshKeyId;
   private String myDigitalOceanSizeId;
   private String myDigitalOceanRegionId;
@@ -65,11 +71,21 @@ public class DigitalOceanCloudClient extends BuildServerAdapter implements Cloud
     myApi = new DigitalOceanApiProvider(settings.getApiKey());
 
     try {
-      final Image image = myApi.getImage(settings.getImageName());
+      final Image image = myApi.getImage(settings.getImageSlug());
       if (image != null) {
         myImage = new DigitalOceanCloudImage(image, settings.getInstancesLimit(), myApi);
       } else {
-        myErrorInfo = new CloudErrorInfo("Cannot find image with name " + settings.getImageName());
+        myErrorInfo = new CloudErrorInfo("Cannot find image with name " + settings.getImageSlug());
+      }
+
+      List<Droplet> droplets = myApi.getDroplets();
+      for (Droplet droplet : droplets) {
+        LOG.info("Found existing droplet " + droplet.getName() + " with image ID " +
+          droplet.getImage().getId() + " (looking for " + image.getId() + ")");
+        if (droplet.getImage().getId().equals(image.getId())) {
+          LOG.info("Creating cloud instance for droplet " + droplet.getName());
+          myImage.addExistingDroplet(droplet, myExecutor);
+        }
       }
 
       final Key sshKey = myApi.getSshKey(settings.getSshKeyName());
@@ -81,6 +97,17 @@ public class DigitalOceanCloudClient extends BuildServerAdapter implements Cloud
     } catch (Exception ex) {
       myErrorInfo = new CloudErrorInfo("Cannot connect to DigitalOcean",
               "Check your internet connection and api key", ex);
+    }
+
+    try {
+      final int volumeSize = Integer.parseInt(settings.getVolumeSize());
+      if (volumeSize > 16 * 1024) {
+        myErrorInfo = new CloudErrorInfo("Volume size is larger than 16TB, got " + settings.getVolumeSize());
+      } else {
+        myDigitalOceanVolumeSize = volumeSize;
+      }
+    } catch (NumberFormatException e) {
+      myErrorInfo = new CloudErrorInfo("Volume size was invalid, got " + settings.getVolumeSize());
     }
 
     myDigitalOceanSizeId = settings.getSizeId();
@@ -148,8 +175,8 @@ public class DigitalOceanCloudClient extends BuildServerAdapter implements Cloud
   public CloudInstance startNewInstance(@NotNull final CloudImage image,
                                         @NotNull final CloudInstanceUserData data) throws QuotaException {
     final DigitalOceanCloudImage cloudImage = (DigitalOceanCloudImage) image;
-    return cloudImage.startNewInstance(myApi, data, myExecutor, myDigitalOceanSshKeyId,
-            myDigitalOceanRegionId, myDigitalOceanSizeId);
+    return cloudImage.startNewInstance(myApi, data, myExecutor, myDigitalOceanVolumeSize, myDigitalOceanSshKeyId,
+        myDigitalOceanRegionId, myDigitalOceanSizeId);
   }
 
   public void restartInstance(@NotNull final CloudInstance instance) {

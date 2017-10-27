@@ -78,6 +78,7 @@ public class DigitalOceanCloudClientFactory implements CloudClientFactory {
     map.put(INSTANCES_LIMIT_PROFILE_SETTING, "3");
     map.put(REGION_PROFILE_SETTING, "5");
     map.put(SIZE_PROFILE_SETTING, "66");
+    map.put(VOLUME_SIZE_PROFILE_SETTING, "0");
     return map;
   }
 

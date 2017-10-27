@@ -22,6 +22,7 @@ import com.myjeeva.digitalocean.common.ActionStatus;
 import com.myjeeva.digitalocean.common.DropletStatus;
 import com.myjeeva.digitalocean.pojo.Action;
 import com.myjeeva.digitalocean.pojo.Droplet;
+import com.myjeeva.digitalocean.pojo.Volume;
 import jetbrains.buildServer.clouds.*;
 import jetbrains.buildServer.serverSide.AgentDescription;
 import jetbrains.buildServer.util.ExceptionUtil;
@@ -32,6 +33,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Date;
 import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -64,6 +66,7 @@ public class DigitalOceanCloudInstance implements CloudInstance {
   private final int myDigitalOceanCloudImageId;
   private final int myDigitalOceanSshKeyId;
   private final String myDigitalOceanSizeId;
+  private final int myDigitalOceanVolumeSize;
   private final String myDigitalOceanRegionId;
 
   @Nullable
@@ -79,10 +82,8 @@ public class DigitalOceanCloudInstance implements CloudInstance {
   @NotNull
   private final ExecutorService myExecutor;
 
-  public DigitalOceanCloudInstance(@NotNull final DigitalOceanApiProvider api,
-                                   @NotNull DigitalOceanCloudImage image,
-                                   @NotNull ExecutorService executor,
-                                   int sshKeyId, String regionId, String sizeId) {
+  public DigitalOceanCloudInstance(@NotNull final DigitalOceanApiProvider api, @NotNull DigitalOceanCloudImage image,
+      @NotNull ExecutorService executor, int volumeSize, int sshKeyId, String regionId, String sizeId) {
     myImage = image;
     myStatus = InstanceStatus.SCHEDULED_TO_START;
     myExecutor = executor;
@@ -91,6 +92,7 @@ public class DigitalOceanCloudInstance implements CloudInstance {
     myDigitalOceanRegionId = regionId;
     myDigitalOceanSizeId = sizeId;
     myDigitalOceanSshKeyId = sshKeyId;
+    myDigitalOceanVolumeSize = volumeSize;
     myDigitalOceanCloudImageId = myImage.getDigitalOceanImage().getId();
   }
 
@@ -139,6 +141,11 @@ public class DigitalOceanCloudInstance implements CloudInstance {
   @Nullable
   public CloudErrorInfo getErrorInfo() {
     return myErrorInfo;
+  }
+
+  public void setExistingDroplet(Droplet droplet) {
+    myDroplet = droplet;
+    myStatus = InstanceStatus.RUNNING;
   }
 
   /**
@@ -260,8 +267,24 @@ public class DigitalOceanCloudInstance implements CloudInstance {
     String name = "inst-" + Math.abs(new Date().hashCode());
     LOG.info("About to create droplet with name '" + name + "'");
 
-    myDroplet = myApi.createDroplet(name, myDigitalOceanCloudImageId, myDigitalOceanSizeId,
-            myDigitalOceanRegionId, myDigitalOceanSshKeyId);
+    List<String> volume_ids = new ArrayList<String>();
+
+    if (myDigitalOceanVolumeSize != 0) {
+      final Volume myVolume = myApi.createVolume(name, myDigitalOceanVolumeSize, myDigitalOceanRegionId);
+
+      new WaitFor(DROPLET_CREATING_TIMEOUT) {
+        @Override
+        protected boolean condition() {
+          final Volume volume = myApi.getVolume(myVolume.getId());
+          return volume.getId().equals(myVolume.getId());
+        }
+      };
+
+      volume_ids.add(myVolume.getId());
+    }
+
+    myDroplet = myApi.createDroplet(name, myDigitalOceanCloudImageId, myDigitalOceanSizeId, myDigitalOceanRegionId,
+        myDigitalOceanSshKeyId, volume_ids);
 
     new WaitFor(DROPLET_CREATING_TIMEOUT) {
       @Override
@@ -288,6 +311,11 @@ public class DigitalOceanCloudInstance implements CloudInstance {
 
     for (DropletLifecycleListener listener : myDropletLifecycleListeners) {
       listener.onDropletDestroyed(myDroplet);
+    }
+
+    List<String> volume_ids = myDroplet.getVolumeIds();
+    for (String volume_id : volume_ids) {
+      myApi.deleteVolume(volume_id);
     }
 
     LOG.info("Droplet [" + myDroplet.getId() + "] destroyed in " +

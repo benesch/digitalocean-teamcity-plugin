@@ -93,8 +93,7 @@ public class DigitalOceanCloudImage implements CloudImage {
   @Nullable
   @Override
   public Integer getAgentPoolId() {
-    //FIXME: Implement new method
-    return -1;
+    return null;
   }
 
   @Nullable
@@ -104,11 +103,10 @@ public class DigitalOceanCloudImage implements CloudImage {
 
   @NotNull
   public DigitalOceanCloudInstance startNewInstance(@NotNull final DigitalOceanApiProvider api,
-                                                    @NotNull CloudInstanceUserData data,
-                                                    @NotNull final ExecutorService executor,
-                                                    int sshKeyId, String regionId, String sizeId) {
-    final DigitalOceanCloudInstance newInstance = new DigitalOceanCloudInstance(api, this, executor,
-            sshKeyId, regionId, sizeId);
+      @NotNull CloudInstanceUserData data, @NotNull final ExecutorService executor, int volumeSize, int sshKeyId,
+      String regionId, String sizeId) {
+    final DigitalOceanCloudInstance newInstance = new DigitalOceanCloudInstance(api, this, executor, volumeSize,
+        sshKeyId, regionId, sizeId);
     myStartingInstances.add(newInstance);
     newInstance.start(data);
 
@@ -137,6 +135,26 @@ public class DigitalOceanCloudImage implements CloudImage {
     return newInstance;
   }
 
+  public synchronized void addExistingDroplet(Droplet droplet, ExecutorService executor) {
+    int sshKeyId = 0; // dummy key, since the instance is already created
+    String regionId = droplet.getRegion().getSlug();
+    String sizeId = droplet.getSize();
+    final DigitalOceanCloudInstance instance = new DigitalOceanCloudInstance(
+      myApi, this, executor, sshKeyId, regionId, sizeId);
+    instance.setExistingDroplet(droplet);
+    final DigitalOceanCloudImage self = this;
+    instance.addOnDropletReadyListener(new DropletLifecycleListener() {
+      public void onDropletStarted(Droplet droplet) {}
+      public void onDropletError(Droplet droplet) {}
+      public void onDropletDestroyed(Droplet droplet) {
+        synchronized (self) {
+          myInstances.remove(instance.getInstanceId());
+        }
+      }
+    });
+    myInstances.put(instance.getInstanceId(), instance);
+  }
+
   public synchronized boolean canStartNewInstance() {
     return (myStartingInstances.size() + myInstances.size()) < myInstancesLimit;
   }
@@ -156,12 +174,12 @@ public class DigitalOceanCloudImage implements CloudImage {
 
   @NotNull
   public Image getDigitalOceanImage() {
-    final Image image = myApi.getImage(myDigitalOceanImage.getName());
+    final Image image = myApi.getImage(myDigitalOceanImage.getSlug());
     if (image != null) {
       myDigitalOceanImage = image;
       myLastError = null;
     } else {
-      myLastError = new CloudErrorInfo("Cannot find image with name " + myDigitalOceanImage.getName());
+      myLastError = new CloudErrorInfo("Cannot find image with slug " + myDigitalOceanImage.getSlug());
     }
 
     return myDigitalOceanImage;

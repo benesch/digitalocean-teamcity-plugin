@@ -3,11 +3,13 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <c:set var="apiKeyParamName" value="<%=ProfileConfigurationConstants.API_KEY_PROFILE_SETTING%>"/>
-<c:set var="imageNameParamName" value="<%=ProfileConfigurationConstants.IMAGE_PROFILE_SETTING%>"/>
+<c:set var="imageSlugParamName" value="<%=ProfileConfigurationConstants.IMAGE_PROFILE_SETTING%>"/>
 <c:set var="sshKeyNameParamName" value="<%=ProfileConfigurationConstants.SSH_KEY_PROFILE_SETTING%>"/>
 <c:set var="regionIdParamName" value="<%=ProfileConfigurationConstants.REGION_PROFILE_SETTING%>"/>
 <c:set var="sizeIdParamName" value="<%=ProfileConfigurationConstants.SIZE_PROFILE_SETTING%>"/>
 <c:set var="instancesLimitParamName" value="<%=ProfileConfigurationConstants.INSTANCES_LIMIT_PROFILE_SETTING%>"/>
+<c:set var="volumeSizeParamName" value="<%=ProfileConfigurationConstants.VOLUME_SIZE_PROFILE_SETTING%>"/>
+
 
 <tr>
   <th><label for="${apiKeyParamName}">API Key*:</label></th>
@@ -15,10 +17,10 @@
 </tr>
 
 <tr>
-  <th><label for="${imageNameParamName}">Image name*:</label></th>
+  <th><label for="${imageSlugParamName}">Image slug*:</label></th>
   <td>
-    <props:textProperty name="${imageNameParamName}" className="textProperty longField" />
-    <span class="smallNote">Use your snapshot name from Digital Ocean</span>
+    <props:textProperty name="${imageSlugParamName}" className="textProperty longField" />
+    <span class="smallNote">Use your snapshot slug from Digital Ocean</span>
   </td>
 </tr>
 
@@ -71,6 +73,17 @@
       <props:option value="32gb"><c:out value="32 Gb - 12CPU - 320Gb - $320/mo"/></props:option>
       <props:option value="48gb"><c:out value="48 Gb - 16CPU - 480Gb - $480/mo"/></props:option>
       <props:option value="64gb"><c:out value="64 Gb - 20CPU - 640Gb - $640/mo"/></props:option>
+      <props:option value="c-2"><c:out value="High perf. CPU: 3 GB - 2CPU - 20Gb - $40/mo"/></props:option>
+      <props:option value="c-4"><c:out value="High perf. CPU: 6 GB - 4CPU - 20Gb - $80/mo"/></props:option>
+      <props:option value="c-8"><c:out value="High perf. CPU: 12 Gb - 8CPU - 20Gb - $160/mo"/></props:option>
+      <props:option value="c-16"><c:out value="High perf. CPU: 24 Gb - 16CPU - 20Gb - $320/mo"/></props:option>
     </props:selectProperty>
 </tr>
 
+<tr>
+  <th><label for="${volumeSizeParamName}">Volume Size*:</label></th>
+  <td>
+    <props:textProperty name="${volumeSizeParamName}" className="textProperty longField" />
+    <span class="smallNote">The GiB of a volume to attach to agents. If the size is zero, no volume will be used.</span>
+  </td>
+</tr>

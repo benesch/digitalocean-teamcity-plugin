@@ -21,6 +21,7 @@ import com.myjeeva.digitalocean.exception.DigitalOceanException;
 import com.myjeeva.digitalocean.exception.RequestUnsuccessfulException;
 import com.myjeeva.digitalocean.impl.DigitalOceanClient;
 import com.myjeeva.digitalocean.pojo.*;
+
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
@@ -60,13 +61,15 @@ public class DigitalOceanApiProvider {
     }
   }
 
-  public Droplet createDroplet(@NotNull final String name, final int imageId, final String size, final String regionId, final int sshKeyId) {
+  public Droplet createDroplet(@NotNull final String name, final int imageId, final String size, final String regionId,
+      final int sshKeyId, List<String> volume_ids) {
     Droplet newDroplet = new Droplet();
     newDroplet.setName(name);
     newDroplet.setImage(new Image(imageId));
     newDroplet.setSize(size);
     newDroplet.setRegion(new Region(regionId));
     newDroplet.setKeys(Collections.singletonList(new Key(sshKeyId)));
+    newDroplet.setVolumeIds(volume_ids);
     try {
       return apiClient.createDroplet(newDroplet);
     } catch (DigitalOceanException e) {
@@ -106,6 +109,60 @@ public class DigitalOceanApiProvider {
     }
   }
 
+  public List<Volume> getVolumes(@NotNull final String region) {
+    try {
+      return this.apiClient.getAvailableVolumes(region).getVolumes();
+    } catch (DigitalOceanException e) {
+      throw new DigitalOceanApiException(e);
+    } catch (RequestUnsuccessfulException e) {
+      throw new DigitalOceanApiException(e);
+    }
+  }
+
+  public Volume getVolume(@NotNull final String id) {
+    try {
+      return apiClient.getVolumeInfo(id);
+    } catch (DigitalOceanException e) {
+      throw new DigitalOceanApiException(e);
+    } catch (RequestUnsuccessfulException e) {
+      throw new DigitalOceanApiException(e);
+    }
+  }
+
+  public Volume createVolume(@NotNull final String name, final int sizeGigabytes, @NotNull final String regionId) {
+    Volume newVolume = new Volume();
+    newVolume.setName(name);
+    newVolume.setSize((double) sizeGigabytes);
+    newVolume.setRegion(new Region(regionId));
+    try {
+      return apiClient.createVolume(newVolume);
+    } catch (DigitalOceanException e) {
+      throw new DigitalOceanApiException(e);
+    } catch (RequestUnsuccessfulException e) {
+      throw new DigitalOceanApiException(e);
+    }
+  }
+
+  public Delete deleteVolume(@NotNull final String volumeId) {
+    try {
+      return apiClient.deleteVolume(volumeId);
+    } catch (DigitalOceanException e) {
+      throw new DigitalOceanApiException(e);
+    } catch (RequestUnsuccessfulException e) {
+      throw new DigitalOceanApiException(e);
+    }
+  }
+
+  public Action attachVolume(int dropletId, @NotNull final String volumeId, @NotNull final String regionSlug) {
+    try {
+      return apiClient.attachVolume(dropletId, volumeId, regionSlug);
+    } catch (DigitalOceanException e) {
+      throw new DigitalOceanApiException(e);
+    } catch (RequestUnsuccessfulException e) {
+      throw new DigitalOceanApiException(e);
+    }
+  }
+
   public Image getImage(int id) {
     try {
       return apiClient.getImageInfo(id);
@@ -116,19 +173,14 @@ public class DigitalOceanApiProvider {
     }
   }
 
-  public Image getImage(String name) {
-    if (name.isEmpty()) {
-      throw new IllegalArgumentException("Name cannot be null or empty");
+  public Image getImage(@NotNull final String slug) {
+    try {
+      return apiClient.getImageInfo(slug);
+    } catch (DigitalOceanException e) {
+      throw new DigitalOceanApiException(e);
+    } catch (RequestUnsuccessfulException e) {
+      throw new DigitalOceanApiException(e);
     }
-
-    List<Image> images = getImages();
-    for (Image image : images) {
-      if (name.equals(image.getName())) {
-        return image;
-      }
-    }
-
-    return null;
   }
 
   public List<Image> getAllImages() {
