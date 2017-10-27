@@ -46,7 +46,7 @@ public class DigitalOceanCloudClientTest {
 
   private static final String apiKey = "xxx";
 
-  private static final String imageSlug = "ubuntu-16-04-x64";
+  private static final String imageName = "16.04.3 x64";
 
   private static final String instancesLimit = "3";
 
@@ -69,7 +69,7 @@ public class DigitalOceanCloudClientTest {
 
     final CloudClientParameters parameters = new CloudClientParameters();
     parameters.setParameter(ProfileConfigurationConstants.API_KEY_PROFILE_SETTING, apiKey);
-    parameters.setParameter(ProfileConfigurationConstants.IMAGE_PROFILE_SETTING, imageSlug);
+    parameters.setParameter(ProfileConfigurationConstants.IMAGE_PROFILE_SETTING, imageName);
     parameters.setParameter(ProfileConfigurationConstants.INSTANCES_LIMIT_PROFILE_SETTING, instancesLimit);
     parameters.setParameter(ProfileConfigurationConstants.SSH_KEY_PROFILE_SETTING, sshKeyName);
     parameters.setParameter(ProfileConfigurationConstants.REGION_PROFILE_SETTING, region);
@@ -134,7 +134,7 @@ public class DigitalOceanCloudClientTest {
 
     final CloudClientParameters parameters = new CloudClientParameters();
     parameters.setParameter(ProfileConfigurationConstants.API_KEY_PROFILE_SETTING, apiKey);
-    parameters.setParameter(ProfileConfigurationConstants.IMAGE_PROFILE_SETTING, imageSlug);
+    parameters.setParameter(ProfileConfigurationConstants.IMAGE_PROFILE_SETTING, imageName);
     parameters.setParameter(ProfileConfigurationConstants.INSTANCES_LIMIT_PROFILE_SETTING, instancesLimit);
     parameters.setParameter(ProfileConfigurationConstants.SSH_KEY_PROFILE_SETTING, sshKeyName);
     parameters.setParameter(ProfileConfigurationConstants.REGION_PROFILE_SETTING, region);

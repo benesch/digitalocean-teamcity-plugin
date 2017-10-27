@@ -71,11 +71,11 @@ public class DigitalOceanCloudClient extends BuildServerAdapter implements Cloud
     myApi = new DigitalOceanApiProvider(settings.getApiKey());
 
     try {
-      final Image image = myApi.getImage(settings.getImageSlug());
+      final Image image = myApi.getImage(settings.getImageName());
       if (image != null) {
         myImage = new DigitalOceanCloudImage(image, settings.getInstancesLimit(), myApi);
       } else {
-        myErrorInfo = new CloudErrorInfo("Cannot find image with name " + settings.getImageSlug());
+        myErrorInfo = new CloudErrorInfo("Cannot find image with name " + settings.getImageName());
       }
 
       List<Droplet> droplets = myApi.getDroplets();

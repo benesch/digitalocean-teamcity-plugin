@@ -3,7 +3,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <c:set var="apiKeyParamName" value="<%=ProfileConfigurationConstants.API_KEY_PROFILE_SETTING%>"/>
-<c:set var="imageSlugParamName" value="<%=ProfileConfigurationConstants.IMAGE_PROFILE_SETTING%>"/>
+<c:set var="imageNameParamName" value="<%=ProfileConfigurationConstants.IMAGE_PROFILE_SETTING%>"/>
 <c:set var="sshKeyNameParamName" value="<%=ProfileConfigurationConstants.SSH_KEY_PROFILE_SETTING%>"/>
 <c:set var="regionIdParamName" value="<%=ProfileConfigurationConstants.REGION_PROFILE_SETTING%>"/>
 <c:set var="sizeIdParamName" value="<%=ProfileConfigurationConstants.SIZE_PROFILE_SETTING%>"/>
@@ -17,10 +17,10 @@
 </tr>
 
 <tr>
-  <th><label for="${imageSlugParamName}">Image slug*:</label></th>
+  <th><label for="${imageNameParamName}">Image name*:</label></th>
   <td>
-    <props:textProperty name="${imageSlugParamName}" className="textProperty longField" />
-    <span class="smallNote">Use your snapshot slug from Digital Ocean</span>
+    <props:textProperty name="${imageNameParamName}" className="textProperty longField" />
+    <span class="smallNote">Use your snapshot name from Digital Ocean</span>
   </td>
 </tr>
 
