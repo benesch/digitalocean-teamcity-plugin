@@ -267,7 +267,7 @@ public class DigitalOceanCloudInstance implements CloudInstance {
     String name = "inst-" + Math.abs(new Date().hashCode());
     LOG.info("About to create droplet with name '" + name + "'");
 
-    List<String> volume_ids = new ArrayList<String>();
+    List<String> volumeIds = new ArrayList<String>();
 
     if (myDigitalOceanVolumeSize != 0) {
       final Volume myVolume = myApi.createVolume(name, myDigitalOceanVolumeSize, myDigitalOceanRegionId);
@@ -280,11 +280,11 @@ public class DigitalOceanCloudInstance implements CloudInstance {
         }
       };
 
-      volume_ids.add(myVolume.getId());
+      volumeIds.add(myVolume.getId());
     }
 
     myDroplet = myApi.createDroplet(name, myDigitalOceanCloudImageId, myDigitalOceanSizeId, myDigitalOceanRegionId,
-        myDigitalOceanSshKeyId, volume_ids);
+        myDigitalOceanSshKeyId, volumeIds);
 
     new WaitFor(DROPLET_CREATING_TIMEOUT) {
       @Override
@@ -307,9 +307,9 @@ public class DigitalOceanCloudInstance implements CloudInstance {
 
     final long startTime = System.currentTimeMillis();
 
-    List<String> volume_ids = myDroplet.getVolumeIds();
-    for (String volume_id : volume_ids) {
-      myApi.detachVolume(myDroplet.getId(), volume_id, myDigitalOceanRegionId);
+    List<String> volumeIds = myDroplet.getVolumeIds();
+    for (String volumeID : volumeIds) {
+      myApi.detachVolume(myDroplet.getId(), volumeID, myDigitalOceanRegionId);
     }
 
     myApi.destroyDroplet(myDroplet.getId());
@@ -318,8 +318,8 @@ public class DigitalOceanCloudInstance implements CloudInstance {
       listener.onDropletDestroyed(myDroplet);
     }
 
-    for (String volume_id : volume_ids) {
-      myApi.deleteVolume(volume_id);
+    for (String volumeID : volumeIds) {
+      myApi.deleteVolume(volumeID);
     }
 
     LOG.info("Droplet [" + myDroplet.getId() + "] destroyed in " +
