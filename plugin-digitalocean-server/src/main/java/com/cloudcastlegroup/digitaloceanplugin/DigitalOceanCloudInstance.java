@@ -264,7 +264,7 @@ public class DigitalOceanCloudInstance implements CloudInstance {
   private void createDroplet() {
     final long startTime = System.currentTimeMillis();
 
-    String name = "inst-" + Math.abs(new Date().hashCode());
+    String name = "teamcity-agent-" + Math.abs(new Date().hashCode());
     LOG.info("About to create droplet with name '" + name + "'");
 
     List<String> volumeIds = new ArrayList<String>();
