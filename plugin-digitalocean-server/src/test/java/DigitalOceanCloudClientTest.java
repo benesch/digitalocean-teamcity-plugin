@@ -22,6 +22,7 @@ import com.cloudcastlegroup.digitaloceanplugin.apiclient.DigitalOceanApiUtils;
 import com.cloudcastlegroup.digitaloceanplugin.settings.ProfileConfigurationConstants;
 import com.myjeeva.digitalocean.common.DropletStatus;
 import com.myjeeva.digitalocean.pojo.Droplet;
+import com.myjeeva.digitalocean.pojo.Volume;
 import jetbrains.buildServer.clouds.CloudClientParameters;
 import jetbrains.buildServer.clouds.CloudImage;
 import jetbrains.buildServer.clouds.CloudInstanceUserData;
@@ -66,6 +67,7 @@ public class DigitalOceanCloudClientTest {
 
     final DigitalOceanApiProvider api = new DigitalOceanApiProvider(apiKey);
     final List<Droplet> existedDroplets = api.getDroplets();
+    final List<Volume> existedVolumes = api.getVolumes(region);
 
     final CloudClientParameters parameters = new CloudClientParameters();
     parameters.setParameter(ProfileConfigurationConstants.API_KEY_PROFILE_SETTING, apiKey);
@@ -122,6 +124,7 @@ public class DigitalOceanCloudClientTest {
     Thread.sleep(10000);
 
     Assert.assertEquals(api.getDroplets().size(), existedDroplets.size());
+    Assert.assertEquals(api.getVolumes(region).size(), existedVolumes.size());
   }
 
   @Test(enabled = false)

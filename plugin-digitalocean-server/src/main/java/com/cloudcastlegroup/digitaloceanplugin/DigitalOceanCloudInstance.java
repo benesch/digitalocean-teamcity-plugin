@@ -271,15 +271,6 @@ public class DigitalOceanCloudInstance implements CloudInstance {
 
     if (myDigitalOceanVolumeSize != 0) {
       final Volume myVolume = myApi.createVolume(name, myDigitalOceanVolumeSize, myDigitalOceanRegionId);
-
-      new WaitFor(DROPLET_CREATING_TIMEOUT) {
-        @Override
-        protected boolean condition() {
-          final Volume volume = myApi.getVolume(myVolume.getId());
-          return volume.getId().equals(myVolume.getId());
-        }
-      };
-
       volumeIds.add(myVolume.getId());
     }
 
@@ -306,20 +297,12 @@ public class DigitalOceanCloudInstance implements CloudInstance {
     }
 
     final long startTime = System.currentTimeMillis();
-
-    List<String> volumeIds = myDroplet.getVolumeIds();
-    for (String volumeID : volumeIds) {
-      myApi.detachVolume(myDroplet.getId(), volumeID, myDigitalOceanRegionId);
-    }
-
     myApi.destroyDroplet(myDroplet.getId());
-
+    for (String volumeID : myDroplet.getVolumeIds()) {
+      myApi.deleteVolume(volumeID);
+    }
     for (DropletLifecycleListener listener : myDropletLifecycleListeners) {
       listener.onDropletDestroyed(myDroplet);
-    }
-
-    for (String volumeID : volumeIds) {
-      myApi.deleteVolume(volumeID);
     }
 
     LOG.info("Droplet [" + myDroplet.getId() + "] destroyed in " +
