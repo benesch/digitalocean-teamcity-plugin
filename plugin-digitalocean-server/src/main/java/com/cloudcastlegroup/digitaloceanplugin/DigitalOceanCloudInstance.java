@@ -307,13 +307,17 @@ public class DigitalOceanCloudInstance implements CloudInstance {
 
     final long startTime = System.currentTimeMillis();
 
+    List<String> volume_ids = myDroplet.getVolumeIds();
+    for (String volume_id : volume_ids) {
+      myApi.detachVolume(myDroplet.getId(), volume_id, myDigitalOceanRegionId);
+    }
+
     myApi.destroyDroplet(myDroplet.getId());
 
     for (DropletLifecycleListener listener : myDropletLifecycleListeners) {
       listener.onDropletDestroyed(myDroplet);
     }
 
-    List<String> volume_ids = myDroplet.getVolumeIds();
     for (String volume_id : volume_ids) {
       myApi.deleteVolume(volume_id);
     }

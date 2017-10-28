@@ -163,6 +163,16 @@ public class DigitalOceanApiProvider {
     }
   }
 
+  public Action detachVolume(int dropletId, @NotNull final String volumeId, @NotNull final String regionSlug) {
+    try {
+      return apiClient.detachVolume(dropletId, volumeId, regionSlug);
+    } catch (DigitalOceanException e) {
+      throw new DigitalOceanApiException(e);
+    } catch (RequestUnsuccessfulException e) {
+      throw new DigitalOceanApiException(e);
+    }
+  }
+
   public Image getImage(int id) {
     try {
       return apiClient.getImageInfo(id);
