@@ -54,6 +54,7 @@ public class DigitalOceanCloudInstance implements CloudInstance {
   public static final int DROPLET_CREATING_TIMEOUT = 15 * 60 * 1000;
   public static final int DROPLET_STARTING_TIMEOUT = 15 * 60 * 1000;
   public static final int DROPLET_SHUTDOWN_TIMEOUT = 15 * 60 * 1000;
+  public static final int VOLUME_DETACH_TIMEOUT = 15 * 60 * 1000;
 
   @NotNull
   private final List<DropletLifecycleListener> myDropletLifecycleListeners = new LinkedList<DropletLifecycleListener>();
@@ -304,22 +305,31 @@ public class DigitalOceanCloudInstance implements CloudInstance {
     }
 
     final long startTime = System.currentTimeMillis();
+
+    List<String> volumeIds = myDroplet.getVolumeIds();
+    for (String volumeId : volumeIds) {
+      try {
+        Action detachAction = myApi.detachVolume(myDroplet.getId(), volumeId,
+          myDigitalOceanRegionId);
+        waitForDigitalOceanAction(detachAction.getId(), VOLUME_DETACH_TIMEOUT);
+        myApi.deleteVolume(volumeId);
+      } catch (DigitalOceanApiException e) {
+        if (e.statusCode != 404) {
+          throw e;
+        }
+        LOG.info("Ignoring 404 while removing volume ID " + volumeId + " from droplet " + myDroplet.getId());
+      }
+    }
+
     try {
       myApi.destroyDroplet(myDroplet.getId());
     } catch (DigitalOceanApiException e) {
       if (e.statusCode != 404) {
         throw e;
       }
+      LOG.info("Ignoring 404 while removing droplet " + myDroplet.getId());
     }
-    for (String volumeID : myDroplet.getVolumeIds()) {
-      try {
-        myApi.deleteVolume(volumeID);
-      } catch (DigitalOceanApiException e) {
-        if (e.statusCode != 404) {
-          throw e;
-        }
-      }
-    }
+
     for (DropletLifecycleListener listener : myDropletLifecycleListeners) {
       listener.onDropletDestroyed(myDroplet);
     }
