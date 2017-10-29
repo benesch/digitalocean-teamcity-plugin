@@ -16,6 +16,8 @@
 
 package com.cloudcastlegroup.digitaloceanplugin.apiclient;
 
+import com.myjeeva.digitalocean.exception.DigitalOceanException;
+
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -23,9 +25,17 @@ import org.jetbrains.annotations.NotNull;
  * Date: 10/12/13
  * Time: 18:54
  */
-class DigitalOceanApiException extends RuntimeException {
+public class DigitalOceanApiException extends RuntimeException {
+
+  public int statusCode;
 
   DigitalOceanApiException(@NotNull Throwable cause) {
     super(cause);
+    if (cause instanceof DigitalOceanException) {
+      DigitalOceanException doex = (DigitalOceanException)cause;
+      statusCode = doex.getHttpStatusCode();
+    } else {
+      statusCode = -1;
+    }
   }
 }

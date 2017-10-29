@@ -16,6 +16,7 @@
 
 package com.cloudcastlegroup.digitaloceanplugin;
 
+import com.cloudcastlegroup.digitaloceanplugin.apiclient.DigitalOceanApiException;
 import com.cloudcastlegroup.digitaloceanplugin.apiclient.DigitalOceanApiProvider;
 import com.cloudcastlegroup.digitaloceanplugin.apiclient.DigitalOceanApiUtils;
 import com.myjeeva.digitalocean.common.ActionStatus;
@@ -229,7 +230,13 @@ public class DigitalOceanCloudInstance implements CloudInstance {
   }
 
   private void doStop() throws Exception {
-    powerOffDroplet();
+    try {
+      powerOffDroplet();
+    } catch (DigitalOceanApiException e) {
+      if (e.statusCode != 404) {
+        throw e;
+      }
+    }
     destroyDroplet();
   }
 
@@ -297,9 +304,21 @@ public class DigitalOceanCloudInstance implements CloudInstance {
     }
 
     final long startTime = System.currentTimeMillis();
-    myApi.destroyDroplet(myDroplet.getId());
+    try {
+      myApi.destroyDroplet(myDroplet.getId());
+    } catch (DigitalOceanApiException e) {
+      if (e.statusCode != 404) {
+        throw e;
+      }
+    }
     for (String volumeID : myDroplet.getVolumeIds()) {
-      myApi.deleteVolume(volumeID);
+      try {
+        myApi.deleteVolume(volumeID);
+      } catch (DigitalOceanApiException e) {
+        if (e.statusCode != 404) {
+          throw e;
+        }
+      }
     }
     for (DropletLifecycleListener listener : myDropletLifecycleListeners) {
       listener.onDropletDestroyed(myDroplet);
