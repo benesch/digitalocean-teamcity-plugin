@@ -21,6 +21,10 @@ version = projectIds.version
 allprojects {
     group = projectIds.group
     version = projectIds.version
+
+    repositories {
+        maven { url "https://jitpack.io" }
+    }
 }
 
 subprojects {

@@ -263,6 +263,17 @@ public class DigitalOceanCloudInstance implements CloudInstance {
     new WaitFor(timeout) {
       @Override
       protected boolean condition() {
+        // XXX: This is horrible, but WaitFor(timeout, pollInterval) doesn't
+        // actually set myPollInterval. The source code isn't available, so I
+        // can't figure out why. Probably should just reimplement WaitFor.
+        try {
+          java.lang.reflect.Field f = WaitFor.class.getDeclaredField("myPollInterval");
+          f.setAccessible(true);
+          f.set(this, POLL_INTERVAL);
+        } catch (Exception e) {
+          LOG.error("unable to reduce poll interval");
+        }
+        System.out.println("sending wait for action request for " + actionId + "\n");
         final Action action = myApi.getEvent(actionId);
         return action == null || action.getStatus().equals(ActionStatus.COMPLETED);
       }
@@ -288,6 +299,17 @@ public class DigitalOceanCloudInstance implements CloudInstance {
     new WaitFor(DROPLET_CREATING_TIMEOUT) {
       @Override
       protected boolean condition() {
+        // XXX: This is horrible, but WaitFor(timeout, pollInterval) doesn't
+        // actually set myPollInterval. The source code isn't available, so I
+        // can't figure out why. Probably should just reimplement WaitFor.
+        try {
+          java.lang.reflect.Field f = WaitFor.class.getDeclaredField("myPollInterval");
+          f.setAccessible(true);
+          f.set(this, POLL_INTERVAL);
+        } catch (Exception e) {
+          LOG.error("unable to reduce poll interval");
+        }
+        System.out.println("sending get droplet for " + myDroplet.getId() + "\n");
         final Droplet droplet = myApi.getDroplet(myDroplet.getId());
         return droplet.getStatus().equals(DropletStatus.ACTIVE);
       }
