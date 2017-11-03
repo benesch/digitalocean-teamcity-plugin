@@ -50,11 +50,12 @@ import static com.cloudcastlegroup.digitaloceanplugin.BuildAgentConfigurationCon
 public class DigitalOceanCloudInstance implements CloudInstance {
   @NotNull
   private static final Logger LOG = Logger.getLogger(DigitalOceanCloudInstance.class);
-  private static final int STATUS_WAITING_TIMEOUT = 15 * 60 * 1000;
-  public static final int DROPLET_CREATING_TIMEOUT = 15 * 60 * 1000;
-  public static final int DROPLET_STARTING_TIMEOUT = 15 * 60 * 1000;
-  public static final int DROPLET_SHUTDOWN_TIMEOUT = 15 * 60 * 1000;
-  public static final int VOLUME_DETACH_TIMEOUT = 15 * 60 * 1000;
+  private static final int STATUS_WAITING_TIMEOUT = 5 * 60 * 1000;
+  public static final int DROPLET_CREATING_TIMEOUT = 5 * 60 * 1000;
+  public static final int DROPLET_STARTING_TIMEOUT = 5 * 60 * 1000;
+  public static final int DROPLET_SHUTDOWN_TIMEOUT = 5 * 60 * 1000;
+  public static final int VOLUME_DETACH_TIMEOUT = 5 * 60 * 1000;
+  public static final int POLL_INTERVAL = 30 * 1000;
 
   @NotNull
   private final List<DropletLifecycleListener> myDropletLifecycleListeners = new LinkedList<DropletLifecycleListener>();
