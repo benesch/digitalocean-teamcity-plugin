@@ -128,6 +128,7 @@ public class DigitalOceanCloudImage implements CloudImage {
       public void onDropletError(Droplet droplet) {
         synchronized (self) {
           myStartingInstances.remove(newInstance);
+          myInstances.remove(newInstance.getInstanceId());
         }
       }
     });
@@ -146,7 +147,11 @@ public class DigitalOceanCloudImage implements CloudImage {
     final DigitalOceanCloudImage self = this;
     instance.addOnDropletReadyListener(new DropletLifecycleListener() {
       public void onDropletStarted(Droplet droplet) {}
-      public void onDropletError(Droplet droplet) {}
+      public void onDropletError(Droplet droplet) {
+        synchronized(self) {
+          myInstances.remove(instance.getInstanceId());
+        }
+      }
       public void onDropletDestroyed(Droplet droplet) {
         synchronized (self) {
           myInstances.remove(instance.getInstanceId());
