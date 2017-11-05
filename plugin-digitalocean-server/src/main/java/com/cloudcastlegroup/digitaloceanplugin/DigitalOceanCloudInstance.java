@@ -70,6 +70,7 @@ public class DigitalOceanCloudInstance implements CloudInstance {
   private final int myDigitalOceanSshKeyId;
   private final String myDigitalOceanSizeId;
   private final int myDigitalOceanVolumeSize;
+  private final String myDigitalOceanVolumeSnapshotId;
   private final String myDigitalOceanRegionId;
 
   @Nullable
@@ -86,7 +87,7 @@ public class DigitalOceanCloudInstance implements CloudInstance {
   private final ExecutorService myExecutor;
 
   public DigitalOceanCloudInstance(@NotNull final DigitalOceanApiProvider api, @NotNull DigitalOceanCloudImage image,
-      @NotNull ExecutorService executor, int volumeSize, int sshKeyId, String regionId, String sizeId) {
+      @NotNull ExecutorService executor, int volumeSize, String volumeSnapshotId, int sshKeyId, String regionId, String sizeId) {
     myImage = image;
     myStatus = InstanceStatus.SCHEDULED_TO_START;
     myExecutor = executor;
@@ -96,6 +97,7 @@ public class DigitalOceanCloudInstance implements CloudInstance {
     myDigitalOceanSizeId = sizeId;
     myDigitalOceanSshKeyId = sshKeyId;
     myDigitalOceanVolumeSize = volumeSize;
+    myDigitalOceanVolumeSnapshotId = volumeSnapshotId;
     myDigitalOceanCloudImageId = myImage.getDigitalOceanImage().getId();
   }
 
@@ -290,7 +292,7 @@ public class DigitalOceanCloudInstance implements CloudInstance {
     List<String> volumeIds = new ArrayList<String>();
 
     if (myDigitalOceanVolumeSize != 0) {
-      final Volume myVolume = myApi.createVolume(name, myDigitalOceanVolumeSize, myDigitalOceanRegionId);
+      final Volume myVolume = myApi.createVolume(name, myDigitalOceanVolumeSize, myDigitalOceanVolumeSnapshotId, myDigitalOceanRegionId);
       volumeIds.add(myVolume.getId());
     }
 

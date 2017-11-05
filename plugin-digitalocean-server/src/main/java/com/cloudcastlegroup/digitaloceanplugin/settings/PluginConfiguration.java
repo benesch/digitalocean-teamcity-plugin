@@ -35,18 +35,21 @@ public class PluginConfiguration {
 
   private final String volumeSize;
 
+  private final String volumeSnapshotId;
+
   private final String regionId;
 
   private final String sizeId;
 
   private final int instancesLimit;
 
-  public PluginConfiguration(String apiKey, String imageName, String volumeSize, String sshKeyName, String regionId,
-      String sizeId, int instancesLimit) {
+  public PluginConfiguration(String apiKey, String imageName, String volumeSize, String volumeSnapshotId,
+      String sshKeyName, String regionId, String sizeId, int instancesLimit) {
     this.apiKey = apiKey;
     this.imageName = imageName;
     this.sshKeyName = sshKeyName;
     this.volumeSize = volumeSize;
+    this.volumeSnapshotId = volumeSnapshotId;
     this.regionId = regionId;
     this.sizeId = sizeId;
     this.instancesLimit = instancesLimit;
@@ -62,13 +65,15 @@ public class PluginConfiguration {
 
     final String volumeSize = getString(params, ProfileConfigurationConstants.VOLUME_SIZE_PROFILE_SETTING);
 
+    final String volumeSnapshotId = getString(params, ProfileConfigurationConstants.VOLUME_SNAPSHOT_ID_PROFILE_SETTING);
+
     final String sizeId = getString(params, ProfileConfigurationConstants.SIZE_PROFILE_SETTING);
 
     final String regionId = getString(params, ProfileConfigurationConstants.REGION_PROFILE_SETTING);
 
     final int instancesLimit = getInt(params, ProfileConfigurationConstants.INSTANCES_LIMIT_PROFILE_SETTING);
 
-    return new PluginConfiguration(apiKey, imageName, volumeSize, sshKeyName, regionId, sizeId, instancesLimit);
+    return new PluginConfiguration(apiKey, imageName, volumeSize, volumeSnapshotId, sshKeyName, regionId, sizeId, instancesLimit);
   }
 
   private static String getString(CloudClientParameters params, String paramName) {
@@ -106,6 +111,10 @@ public class PluginConfiguration {
 
   public String getVolumeSize() {
     return volumeSize;
+  }
+
+  public String getVolumeSnapshotId() {
+    return volumeSnapshotId;
   }
 
   public String getRegionId() {

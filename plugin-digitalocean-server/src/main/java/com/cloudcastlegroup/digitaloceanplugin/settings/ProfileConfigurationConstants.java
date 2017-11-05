@@ -37,6 +37,8 @@ public interface ProfileConfigurationConstants {
 
   @NotNull String VOLUME_SIZE_PROFILE_SETTING = "volume_size";
 
+  @NotNull String VOLUME_SNAPSHOT_ID_PROFILE_SETTING = "volume_snapshot_id";
+
   @NotNull String INSTANCES_LIMIT_PROFILE_SETTING = "instances_limit";
 
   @NotNull String API_KEY_PROFILE_SETTING = "api_key";

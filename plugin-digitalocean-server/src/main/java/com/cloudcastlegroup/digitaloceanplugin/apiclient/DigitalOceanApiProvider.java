@@ -129,11 +129,12 @@ public class DigitalOceanApiProvider {
     }
   }
 
-  public Volume createVolume(@NotNull final String name, final int sizeGigabytes, @NotNull final String regionId) {
+  public Volume createVolume(@NotNull final String name, final int sizeGigabytes, final String snapshotId, @NotNull final String regionId) {
     Volume newVolume = new Volume();
     newVolume.setName(name);
     newVolume.setSize((double) sizeGigabytes);
     newVolume.setRegion(new Region(regionId));
+    newVolume.setSnapshotId(snapshotId);
     try {
       return apiClient.createVolume(newVolume);
     } catch (DigitalOceanException e) {

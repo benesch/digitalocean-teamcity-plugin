@@ -51,6 +51,7 @@ public class DigitalOceanCloudClient extends BuildServerAdapter implements Cloud
   private final DigitalOceanApiProvider myApi;
 
   private int myDigitalOceanVolumeSize;
+  private String myDigitalOceanVolumeSnapshotId;
   private int myDigitalOceanSshKeyId;
   private String myDigitalOceanSizeId;
   private String myDigitalOceanRegionId;
@@ -110,6 +111,7 @@ public class DigitalOceanCloudClient extends BuildServerAdapter implements Cloud
       myErrorInfo = new CloudErrorInfo("Volume size was invalid, got " + settings.getVolumeSize());
     }
 
+    myDigitalOceanVolumeSnapshotId = settings.getVolumeSnapshotId();
     myDigitalOceanSizeId = settings.getSizeId();
     myDigitalOceanRegionId = settings.getRegionId();
   }
@@ -175,8 +177,8 @@ public class DigitalOceanCloudClient extends BuildServerAdapter implements Cloud
   public CloudInstance startNewInstance(@NotNull final CloudImage image,
                                         @NotNull final CloudInstanceUserData data) throws QuotaException {
     final DigitalOceanCloudImage cloudImage = (DigitalOceanCloudImage) image;
-    return cloudImage.startNewInstance(myApi, data, myExecutor, myDigitalOceanVolumeSize, myDigitalOceanSshKeyId,
-        myDigitalOceanRegionId, myDigitalOceanSizeId);
+    return cloudImage.startNewInstance(myApi, data, myExecutor, myDigitalOceanVolumeSize, myDigitalOceanVolumeSnapshotId,
+        myDigitalOceanSshKeyId, myDigitalOceanRegionId, myDigitalOceanSizeId);
   }
 
   public void restartInstance(@NotNull final CloudInstance instance) {

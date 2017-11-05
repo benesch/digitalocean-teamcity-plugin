@@ -9,6 +9,7 @@
 <c:set var="sizeIdParamName" value="<%=ProfileConfigurationConstants.SIZE_PROFILE_SETTING%>"/>
 <c:set var="instancesLimitParamName" value="<%=ProfileConfigurationConstants.INSTANCES_LIMIT_PROFILE_SETTING%>"/>
 <c:set var="volumeSizeParamName" value="<%=ProfileConfigurationConstants.VOLUME_SIZE_PROFILE_SETTING%>"/>
+<c:set var="volumeSnapshotIdParamName" value="<%=ProfileConfigurationConstants.VOLUME_SNAPSHOT_ID_PROFILE_SETTING%>"/>
 
 
 <tr>
@@ -85,5 +86,13 @@
   <td>
     <props:textProperty name="${volumeSizeParamName}" className="textProperty longField" />
     <span class="smallNote">The GiB of a volume to attach to agents. If the size is zero, no volume will be used.</span>
+  </td>
+</tr>
+
+<tr>
+  <th><label for="${volumeSnapshotIdParamName}">Volume Snapshot ID:</label></th>
+  <td>
+    <props:textProperty name="${volumeSnapshotIdParamName}" className="textProperty longField" />
+    <span class="smallNote">The volume snapshot to create the volume from. If no ID is specified, a blank volume will be created.</span>
   </td>
 </tr>

@@ -103,10 +103,10 @@ public class DigitalOceanCloudImage implements CloudImage {
 
   @NotNull
   public DigitalOceanCloudInstance startNewInstance(@NotNull final DigitalOceanApiProvider api,
-      @NotNull CloudInstanceUserData data, @NotNull final ExecutorService executor, int volumeSize, int sshKeyId,
-      String regionId, String sizeId) {
+      @NotNull CloudInstanceUserData data, @NotNull final ExecutorService executor, int volumeSize,
+      String volumeSnapshotId, int sshKeyId, String regionId, String sizeId) {
     final DigitalOceanCloudInstance newInstance = new DigitalOceanCloudInstance(api, this, executor, volumeSize,
-        sshKeyId, regionId, sizeId);
+        volumeSnapshotId, sshKeyId, regionId, sizeId);
     myStartingInstances.add(newInstance);
     newInstance.start(data);
 
@@ -138,11 +138,12 @@ public class DigitalOceanCloudImage implements CloudImage {
 
   public synchronized void addExistingDroplet(Droplet droplet, ExecutorService executor) {
     int sshKeyId = 0; // dummy key, since the instance is already created
-    int volumeId = 0; // dummy volume size too
+    int volumeSize = 0; // dummy
+    String volumeSnapshotId = ""; // dummy
     String regionId = droplet.getRegion().getSlug();
     String sizeId = droplet.getSize();
     final DigitalOceanCloudInstance instance = new DigitalOceanCloudInstance(
-      myApi, this, executor, volumeId, sshKeyId, regionId, sizeId);
+      myApi, this, executor, volumeSize, volumeSnapshotId, sshKeyId, regionId, sizeId);
     instance.setExistingDroplet(droplet);
     final DigitalOceanCloudImage self = this;
     instance.addOnDropletReadyListener(new DropletLifecycleListener() {
